@@ -25,8 +25,10 @@ module Peglist::Helpers
   def HURL(*args)
     url = URL(*args)
     url.scheme = "http"
-    url.host = "camping.metaatem.net"
-    url.port = nil
+    if `hostname`.match(/i-am-a-Macx/)
+      url.host = "camping.metaatem.net"
+      url.port = nil
+    end
     url
   end
 end
