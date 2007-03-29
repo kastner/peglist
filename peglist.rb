@@ -8,8 +8,27 @@ require 'face'
 
 Camping.goes :Peglist
 
+# module Camping
+#   def R(c,*g)
+#     p=/\(.+?\)/
+#     g.inject(c.urls.find{|x|x.scan(p).size==g.size}.dup){|s,a|
+#      s.sub p,C.escape((a[a.class.primary_key]rescue a))
+#     }.gsub(/\/\/([0-9\.]+)\//,'//camping.metaatem.net')
+#   end
+# end
+
 module Peglist
   include Camping::Session
+end
+
+module Peglist::Helpers
+  def HURL(*args)
+    url = URL(*args)
+    url.scheme = "http"
+    url.host = "camping.metaatem.net"
+    url.port = nil
+    url
+  end
 end
 
 module Peglist::Models
@@ -72,7 +91,7 @@ module Peglist::Controllers
       if @user.save
         @state.user_id = @user.id
         @state.username = @user.username
-        redirect R(Index)
+        redirect HURL(Index).to_s
       else
         render :signup
       end
@@ -115,9 +134,9 @@ module Peglist::Controllers
         @user = User.find_by_openid(identity_url)
         if @user
           @state.username = @user.username
-          redirect R(Index)
+          redirect HURL(Index).to_s
         else
-          redirect R(Signup)
+          redirect HURL(Signup).to_s
         end
       end
     end
@@ -130,7 +149,9 @@ module Peglist::Controllers
       when OpenID::FAILURE
         @a = "Failure with that OpenID url. Check it and try again please."
       when OpenID::SUCCESS
-        redirect response.redirect_url("http:" + self.URL.to_s, "http:" + self.URL(Login).to_s)
+        # redirect response.redirect_url("http:" + self.URL.to_s, "http:" + self.URL(Login).to_s)
+        redirect response.redirect_url(self.HURL.to_s, self.HURL(Login).to_s)
+        # redirect response.redirect_url("http://camping.metaatem.net/", "http://camping.metaatem.net/login/")
       end      
     end
   end
@@ -205,6 +226,7 @@ module Peglist::Views
   end
   
   def index
+    p @a
   end
   
   def signup
