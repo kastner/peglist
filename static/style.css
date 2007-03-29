@@ -1,0 +1,59 @@
+body {
+  font: 75% "Helvetica Nueu", helvetica, sans-serif;
+}
+
+#page {
+  width: 922px;
+  margin: 0 auto;
+  background: white;
+  border: 1px solid #999;
+  min-height: 600px;
+}
+
+#header {
+  background: white url('/static/header.jpg');
+  height: 164px;
+}
+
+#header h2 {
+  margin: 0;
+  padding: 0;
+}
+
+#header #logo a {
+  display: block;
+  width: 160px;
+  height: 145px;
+  position: relative;
+  left: 115px;
+  text-indent: -10000px;
+}
+
+#header form {
+  position: relative;
+  top: -130px;
+  left: 600px;
+  width: 300px;
+  color: #999;
+}
+
+#header form label {
+  position: absolute;
+  margin-left: 5px;
+  margin-top: 6px;
+  z-index: 2;
+}
+
+#header form input[type="text"]{
+  position: relative;
+  width: 200px;
+  margin-right: 10px;
+  top: -3px;
+  z-index: 1;
+}
+
+#content {
+  padding: 10px;
+  margin-top: -17px;
+  font-size: 1.2em;
+}
