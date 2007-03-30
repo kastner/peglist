@@ -1,12 +1,13 @@
 body {
   font: 75% "Helvetica Nueu", helvetica, sans-serif;
+  background: #f3f2c0 ; /*url('/static/background.png');*/
 }
 
 #page {
   width: 922px;
   margin: 0 auto;
   background: white;
-  border: 1px solid #999;
+  border: 2px solid #B3622A;
   min-height: 600px;
 }
 
@@ -39,17 +40,43 @@ body {
 
 #header form label {
   position: absolute;
-  margin-left: 5px;
+  margin-left: 24px;
   margin-top: 6px;
   z-index: 2;
 }
 
 #header form input[type="text"]{
+  background: white url('/static/openid-icon.gif') no-repeat;
   position: relative;
   width: 200px;
   margin-right: 10px;
+  padding-left: 20px;
   top: -3px;
   z-index: 1;
+}
+
+#header #nav {
+  position: relative;
+  list-style: none;
+  top: -66px;
+  left: 530px;
+}
+
+#header #nav li {
+  float: left;
+  padding: 10px 15px;
+  background: #6A2F16;
+  margin: 0 2px;
+}
+
+#header #nav li a {
+  font-size: 1.2em;
+  color: #D9A684;
+  text-decoration: none;
+}
+
+#home #nav .home {
+  background: #cf7842;
 }
 
 #content {

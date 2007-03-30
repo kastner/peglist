@@ -8,15 +8,6 @@ require 'face'
 
 Camping.goes :Peglist
 
-# module Camping
-#   def R(c,*g)
-#     p=/\(.+?\)/
-#     g.inject(c.urls.find{|x|x.scan(p).size==g.size}.dup){|s,a|
-#      s.sub p,C.escape((a[a.class.primary_key]rescue a))
-#     }.gsub(/\/\/([0-9\.]+)\//,'//camping.metaatem.net')
-#   end
-# end
-
 module Peglist
   include Camping::Session
 end
@@ -25,7 +16,7 @@ module Peglist::Helpers
   def HURL(*args)
     url = URL(*args)
     url.scheme = "http"
-    if `hostname`.match(/i-am-a-Macx/)
+    if `hostname`.match(/i-am-a-Mac/)
       url.host = "camping.metaatem.net"
       url.port = nil
     end
@@ -72,6 +63,9 @@ module Peglist::Controllers
     def get
       render :index
     end
+  end
+  
+  class What
   end
   
   class Signup
@@ -208,12 +202,16 @@ module Peglist::Views
         link :rel => 'stylesheet', :type => 'text/css', :href => '/static/style.css'
         script :type => 'text/javascript', :src => '/static/mootools.js'
       end
-      body do
+      body.home! do
         div.page! do
           div.header! do
             h2.logo! { a 'Peg list at Meta | ateM', :href => R(Index)}
             if !@user
               _login
+            end
+            ul.nav! do
+              li.home { a("Home / Peg list", :href => R(Index)) }
+              li.what { a "What is a Peg list?", :href => R(What) }
             end
           end
           div.content! do
