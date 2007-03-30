@@ -1,11 +1,12 @@
 body {
   font: 75% "Helvetica Nueu", helvetica, sans-serif;
-  background: #f3f2c0 ; /*url('/static/background.png');*/
+  background: #f3f2c0 url('/static/background.jpg');
 }
 
 #page {
   width: 922px;
   margin: 0 auto;
+  margin-top: 20px;
   background: white;
   border: 2px solid #B3622A;
   min-height: 600px;

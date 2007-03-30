@@ -66,6 +66,9 @@ module Peglist::Controllers
   end
   
   class What
+    def get
+      render :what
+    end
   end
   
   class Signup
@@ -227,6 +230,9 @@ module Peglist::Views
   
   def index
     p @a
+  end
+  
+  def what
   end
   
   def signup
