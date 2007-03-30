@@ -14,6 +14,7 @@ body {
 #header {
   background: white url('/static/header.jpg');
   height: 164px;
+  position: relative;
 }
 
 #header h2 {
@@ -56,27 +57,35 @@ body {
 }
 
 #header #nav {
-  position: relative;
+  position: absolute;
   list-style: none;
-  top: -66px;
-  left: 530px;
+  top: 103px;
+  left: 520px;
 }
 
 #header #nav li {
   float: left;
-  padding: 10px 15px;
-  background: #6A2F16;
-  margin: 0 2px;
 }
 
 #header #nav li a {
-  font-size: 1.2em;
+  font-size: 1.1em;
   color: #D9A684;
   text-decoration: none;
+  padding: 10px 15px;
+  margin: 0 2px;
+  display: block;
 }
 
-#home #nav .home {
+#header #nav li a:hover {
+  background: #A36E49;
+}
+
+#home #nav .home a {
   background: #cf7842;
+}
+
+#home #nav .home a:hover{
+  background: #cf7842;  
 }
 
 #content {
