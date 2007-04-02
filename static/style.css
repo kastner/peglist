@@ -1,6 +1,17 @@
 body {
   font: 75% "Helvetica Nueu", helvetica, sans-serif;
-  background: #f3f2c0 url('/static/background.jpg');
+  background: #C58A6A url('/static/background.jpg');
+}
+
+span.amp {
+  font-family: "Goudy Old Style", "Palatino","Book Antiqua",serif;
+  font-size: 130%;
+}
+
+h1 {
+  font-family: Georgia, sans;
+  font-weight: normal;
+  letter-spacing: 2px;
 }
 
 #page {
@@ -12,29 +23,38 @@ body {
   min-height: 600px;
 }
 
-#header {
-  background: white url('/static/header.jpg');
-  height: 164px;
+#header .wrap {
   position: relative;
+  overflow: auto;
+  background: #8B4313 url('/static/header.jpg');
+  border-bottom: 3px solid #B3622A;
+  overflow: hidden;
 }
 
-#header h2 {
+#header hr {
+  display: none;
+}
+
+#header h2#logo {
   margin: 0;
   padding: 0;
+  position: relative;
 }
 
 #header #logo a {
-  display: block;
-  width: 160px;
-  height: 145px;
-  position: relative;
-  left: 115px;
-  text-indent: -10000px;
+  position: absolute;
+  top: 5px;
+  left: 124px;
+  color: white;
+  font-size: 1.5em;
+  line-height: 1.3em;
+  z-index: 100 !important;
 }
+#header #logo a img { border: none; }
 
 #header form {
-  position: relative;
-  top: -130px;
+  position: absolute;
+  top: 10px;
   left: 600px;
   width: 300px;
   color: #999;
@@ -43,7 +63,7 @@ body {
 #header form label {
   position: absolute;
   margin-left: 24px;
-  margin-top: 6px;
+  margin-top: 7px;
   z-index: 2;
 }
 
@@ -51,17 +71,16 @@ body {
   background: white url('/static/openid-icon.gif') no-repeat;
   position: relative;
   width: 200px;
+  font-size: 110%;
   margin-right: 10px;
   padding-left: 20px;
-  top: -3px;
   z-index: 1;
 }
 
 #header #nav {
-  position: absolute;
+  float: right;
+  margin: 120px 0 0 10px;
   list-style: none;
-  top: 103px;
-  left: 520px;
 }
 
 #header #nav li {
@@ -69,12 +88,16 @@ body {
 }
 
 #header #nav li a {
-  font-size: 1.1em;
-  color: #D9A684;
+  font-size: 0.9em;
+  color: #F5F4BD;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: Georgia;
   text-decoration: none;
-  padding: 10px 15px;
+  padding: 7px 15px;
   margin: 0 2px;
   display: block;
+  line-height: 120%;
 }
 
 #header #nav li a:hover {
