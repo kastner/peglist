@@ -257,7 +257,7 @@ module Peglist::Controllers
   end
 end
 
-module Peglist::Views  
+module Peglist::Views
   def amp
     span.amp "&"
   end
@@ -267,6 +267,7 @@ module Peglist::Views
   end
   
   def layout
+    @indent = 2
     xhtml_strict do
       head do
         title "Peglist from Meta | ateM"
@@ -274,6 +275,8 @@ module Peglist::Views
         script :type => 'text/javascript', :src => '/static/prototype.js'
       end
       body.home! do
+        # raise @indent.to_s
+        # raise self.instance_variables.join("\n")
         div.page! do
           div.header! do
             h2.logo! do
@@ -356,12 +359,21 @@ module Peglist::Views
     unless @user.ordered_pegs.empty?
       ul.peg_list! do
         @user.ordered_pegs.each do |peg|
-          li.peg do
+          li.peg :id => "peg_#{peg.id}" do
             img :src => (peg.image_url || "/static/empty.gif")
             span "#{peg.number}: #{peg.phrase}"
           end
         end
       end
+      text <<-HTML
+      <script type="text/javascript" charset="utf-8">
+        document.getElementsByClassName('peg').forEach(function(peg) {
+          Event.observe(peg, 'click', function() {
+            alert("Clicked on this peg! " + peg.id)
+          })
+        })
+      </script>
+      HTML
     else
       img :src => '/static/blank_slate.jpg'
     end
