@@ -81,6 +81,7 @@ module Peglist::Controllers
   
   class What
     def get
+      @body_id = "what"
       render :what
     end
   end
@@ -108,6 +109,48 @@ module Peglist::Controllers
     end
   end
   
+  class UpdatePeg < R '/update/(.+)'
+    def post(id)
+      @user = User.find_by_id(@state.user_id)
+      @peg = @user.pegs.find_by_id(id)
+      if @peg
+        @peg.phrase = input.phrase
+        @peg.save
+        # make sure it IS an XHR TODO
+        @headers["Content-Type"] = "text/javascript"
+        <<-HTML
+        $('peg_#{id}').replace("#{escape_javascript(_peg_box)}")
+        // new Effect.Highlight('peg_#{id}')
+        HTML
+      end
+    end
+  end
+  
+  class PopupPeg < R '/popup_peg/(.+)'
+    def get(id)
+      @headers["Content-Type"] = "text/javascript"
+      @peg = Peg.find_by_id(id)
+      if @peg
+        <<-HTML
+        var lbox = new Lightbox("#{escape_javascript(_peg_form)}")
+        Event.observe('new_peg_submit', 'click', function(e) {
+          Event.stop(e);
+          new Ajax.Request('/update/#{id}', {
+            parameters: Form.serialize('new_peg'),
+            onSuccess: function() {
+              lbox.deactivate()
+            }
+          })
+        })
+        Event.observe('new_peg_cancel', 'click', function() {
+          lbox.deactivate()
+        })
+        HTML
+      else
+      end
+    end
+  end
+  
   class AddQuickPeg < R '/add_quick_peg'
     def post
       @user = User.find_by_id(@state.user_id)
@@ -125,9 +168,18 @@ module Peglist::Controllers
         HTML
       end
       
-    end
-    
-    def get
+    end    
+  end
+  
+  class AddPeg < R '/add_peg'
+    def post
+      @user = User.find_by_id(@state.user_id)
+      @peg = @user.pegs.create(:number => input.number, :phrase => input.phrase)
+      if @peg.save
+        redirect HURL(Index).to_s
+      else
+        render :new
+      end
     end
   end
   
@@ -222,7 +274,7 @@ module Peglist::Controllers
     end
   end
   
-  class Static < R '/static/(.+)'         
+  class Static < R '/static/(.+)'
     MIME_TYPES = {'.css' => 'text/css', '.js' => 'text/javascript', 
                   '.jpg' => 'image/jpeg'}
     PATH = File.expand_path(File.dirname(__FILE__))
@@ -267,16 +319,15 @@ module Peglist::Views
   end
   
   def layout
-    @indent = 2
     xhtml_strict do
       head do
         title "Peglist from Meta | ateM"
         link :rel => 'stylesheet', :type => 'text/css', :href => '/static/style.css'
+        link :rel => 'stylesheet', :type => 'text/css', :href => '/static/lightbox.css'
         script :type => 'text/javascript', :src => '/static/prototype.js'
+        script :type => 'text/javascript', :src => '/static/lightbox.js'
       end
-      body.home! do
-        # raise @indent.to_s
-        # raise self.instance_variables.join("\n")
+      body :id => (@body_id || "home") do
         div.page! do
           div.header! do
             h2.logo! do
@@ -315,6 +366,15 @@ module Peglist::Views
   
   def new
     h1 "Add a peg"
+    errors_for @peg
+    form.new_peg :id => "new_peg", :action => "add_peg", :method => "post" do
+      # images TODO
+      label "Number:"
+      input :type => "text", :name => "number", :value => @peg.number
+      label "Peg:"
+      input :type => "text", :name => "phrase", :value => @peg.phrase
+      input :type => "submit", :id => "new_peg_submit", :value => "Save"
+    end    
   end
   
   def many_new
@@ -343,8 +403,27 @@ module Peglist::Views
     HTML
   end
   
+  def _peg_form
+    form.new_peg :id => "new_peg" do
+      # Delete, change phrase, images
+      h3 "Editing peg for number #{@peg.number}"
+      input :type => "hidden", :name => "number", :value => @peg.number
+      label "Peg:"
+      input :type => "text", :name => "phrase", :value => @peg.phrase
+      input :type => "submit", :id => "new_peg_submit", :value => "Save"
+      input :type => "button", :id => "new_peg_cancel", :value => "Cancel"
+    end
+  end
+  
   def user_error
     h1 "You must be logged in to do that. Log in above by using an OpenID address."
+  end
+
+  def _peg_box
+    li.peg :id => "peg_#{@peg.id}" do
+      img :src => (@peg.image_url || "/static/empty.gif")
+      span "#{@peg.number}: #{@peg.phrase}"
+    end
   end
   
   def _logged_in_home
@@ -359,21 +438,22 @@ module Peglist::Views
     unless @user.ordered_pegs.empty?
       ul.peg_list! do
         @user.ordered_pegs.each do |peg|
-          li.peg :id => "peg_#{peg.id}" do
-            img :src => (peg.image_url || "/static/empty.gif")
-            span "#{peg.number}: #{peg.phrase}"
-          end
+          @peg = peg
+          _peg_box
         end
       end
       text <<-HTML
       <script type="text/javascript" charset="utf-8">
         document.getElementsByClassName('peg').forEach(function(peg) {
           Event.observe(peg, 'click', function() {
-            alert("Clicked on this peg! " + peg.id)
+            new Ajax.Request('/popup_peg/' + peg.id.replace(/peg_/, ''), {method: 'get'})
           })
         })
       </script>
       HTML
+      div.peg_popup_wrap! :style => "display: none;" do
+        div.peg_popup!
+      end
     else
       img :src => '/static/blank_slate.jpg'
     end
