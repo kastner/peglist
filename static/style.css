@@ -117,3 +117,30 @@ h1 {
   margin-top: -17px;
   font-size: 1.2em;
 }
+
+ul#peg_list {
+  list-style: none;
+  list-style-position: inside;
+  margin: 0;
+  padding: 0;
+  margin-top: 10px;
+  margin-left: 10px;
+  overflow: auto;
+}
+
+ul#peg_list li {
+  float: left;
+  width: 85px;
+  height: 105px;
+  border: 1px solid black;
+  margin: 3px;
+  padding: 2px;
+}
+
+ul#peg_list li img {
+  margin: 5px 0 5px 5px;
+}
+
+#footer {
+ clear: left;
+}

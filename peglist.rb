@@ -5,6 +5,8 @@ $:.unshift File.dirname(__FILE__) + "/../../lib"
 
 Camping.goes :Peglist
 
+ActiveRecord::Base.logger = Logger.new(STDOUT)
+
 module Peglist
   include Camping::Session
 end
@@ -19,17 +21,29 @@ module Peglist::Helpers
     end
     url
   end
+  
+  def escape_javascript(javascript)
+    (javascript || '').gsub('\\','\0\0').gsub(/\r\n|\n|\r/, "\\n").gsub(/["']/) { |m| "\\#{m}" }
+  end
 end
 
 module Peglist::Models
   class Peg < Base
     belongs_to :user
     validates_format_of :number, :with => /^[0-9]+$/
+    validates_uniqueness_of :number, :scope => :user_id
   end
   
   class User < Base
     validates_uniqueness_of :username
     has_many :pegs
+    
+    def ordered_pegs
+      zeros, rest = pegs.find(:all).partition {|i| i.number.match(/^0/)}
+      zeros.sort! {|a,b| a.number <=> b.number}
+      rest.sort! {|a,b| a.number.to_i <=> b.number.to_i}
+      [zeros, rest].flatten
+    end
   end
   
   class CreateTheBasics < V 1.0
@@ -60,7 +74,7 @@ module Peglist::Controllers
   class Index < R '/'
     def get
       # raise @state.to_s
-      @user = User.find_by_id(@state.user_id, :include => :pegs) if @state.user_id
+      @user = User.find_by_id(@state.user_id) if @state.user_id
       render :index
     end
   end
@@ -86,10 +100,34 @@ module Peglist::Controllers
   class Manynew
     def get
       if @state.user_id
+        @form_id = "peg" + Time.new.to_f.to_s
         render :many_new
       else
         render :user_error
       end
+    end
+  end
+  
+  class AddQuickPeg < R '/add_quick_peg'
+    def post
+      @user = User.find_by_id(@state.user_id)
+      puts input.number
+      @peg = @user.pegs.create(:number => input.number, :phrase => input.phrase)
+      @form_id = Time.new.to_f.to_s
+      @headers["Content-Type"] = "text/javascript"
+      unless @peg.errors.empty?
+        <<-HTML
+        alert("Errors? #{@peg.errors.full_messages}")
+        HTML
+      else
+        <<-HTML
+        new Insertion.Bottom('pegs', "#{escape_javascript(_quick_peg_form)}");
+        HTML
+      end
+      
+    end
+    
+    def get
     end
   end
   
@@ -219,7 +257,7 @@ module Peglist::Controllers
   end
 end
 
-module Peglist::Views
+module Peglist::Views  
   def amp
     span.amp "&"
   end
@@ -233,7 +271,7 @@ module Peglist::Views
       head do
         title "Peglist from Meta | ateM"
         link :rel => 'stylesheet', :type => 'text/css', :href => '/static/style.css'
-        script :type => 'text/javascript', :src => '/static/mootools.js'
+        script :type => 'text/javascript', :src => '/static/prototype.js'
       end
       body.home! do
         div.page! do
@@ -278,7 +316,28 @@ module Peglist::Views
   
   def many_new
     h1 "Add multiple pegs"
+    div.pegs! do
+      _quick_peg_form
+    end
+  end
     
+  def _quick_peg_form
+    form.new_peg :action => "/add_quick_peg", :method => "post", :id => @form_id do
+      label "Number:", :for => @form_id + "_number"
+      input :type => "text", :name => "number", :size => 5, :id => @form_id + "_number"
+      label "Peg:", :for => @form_id + "_phrase"
+      input :type => "text", :name => "phrase", :id => @form_id + "_phrase"
+      input :type => "submit", :value => "Add"
+    end
+    text <<-HTML
+    <script type="text/javascript" charset="utf-8">
+      $("#{@form_id + "_number"}").focus();
+      Event.observe("#{@form_id}", 'submit', function(e) {
+        Event.stop(e);
+        new Ajax.Request($("#{@form_id}").action, { parameters: Form.serialize("#{@form_id}")})
+      })
+    </script>
+    HTML
   end
   
   def user_error
@@ -293,6 +352,19 @@ module Peglist::Views
     a "Add a peg", :href => R(New)
     text " or "
     a "Add many pegs", :href => R(Manynew)
+    
+    unless @user.ordered_pegs.empty?
+      ul.peg_list! do
+        @user.ordered_pegs.each do |peg|
+          li.peg do
+            img :src => (peg.image_url || "/static/empty.gif")
+            span "#{peg.number}: #{peg.phrase}"
+          end
+        end
+      end
+    else
+      img :src => '/static/blank_slate.jpg'
+    end
   end
   
   def _new_home
@@ -356,6 +428,14 @@ module Peglist::Views
       p do
         label 'Username:', :for => 'signup_username'
         input :name => 'username', :type => 'text', :id => 'signup_username', :value => @new_user.username
+        text <<-HTML
+          <script type="text/javascript" charset="utf-8">
+          Event.observe('signup_username', 'keyup', function() {
+            $('flickr_username').value = $('signup_username').value
+            $('twitter_username').value = $('signup_username').value
+          })            
+          </script>
+        HTML
       end
       
       fieldset do
@@ -376,14 +456,13 @@ module Peglist::Views
             button.onclick = function() {
               var type = button.id.split("_")[0]
               var url = '/avatar/' + type + '/' + $(type+'_username').value
-              new Ajax(url, {
+              new Ajax.Request(url, {
                 method: 'get',
-                onComplete: function(req) {
-                  $('signup_avatar').value = req;
-                  $('avatar_preview').src = req;
+                onSuccess: function(req) {
+                  $('signup_avatar').value = req.responseText;
+                  $('avatar_preview').src = req.responseText;
                 }
-              }).request()
-              
+              })
             }
           })
         </script>
@@ -392,7 +471,7 @@ module Peglist::Views
       
       p do
         label 'Avatar url:', :for => 'signup_avatar'
-        input :name => 'avatar_url', :type => 'text', :id => 'signup_avatar', :value => @user.avatar_url
+        input :name => 'avatar_url', :type => 'text', :id => 'signup_avatar', :value => @new_user.avatar_url
         img :id => 'avatar_preview', :width => 45, :src => @avatar_url
       end
       
@@ -416,10 +495,10 @@ module Peglist::Views
           input :type => 'submit', :value => 'login'
           text <<-HTML
           <script type="text/javascript" charset="utf-8">
-            window.addEvent('domready', function() { if ($('login_openid').value != '') {$('login_openid').setStyle('zIndex', 3) }})
-            $('login_openid_label').addEvent('click', function() { $('login_openid').focus(); })
-            $('login_openid').addEvent('focus', function() { $('login_openid').setStyle('zIndex', 3) })
-            $('login_openid').addEvent('blur', function() { if ($('login_openid').value == '') $('login_openid').setStyle('zIndex', 1) })
+            Event.observe(window, 'load', function() { if ($('login_openid').value != '') {$('login_openid').setStyle('zIndex', 3) }})
+            Event.observe('login_openid_label', 'click', function() { $('login_openid').focus(); })
+            Event.observe('login_openid', 'focus', function() { $('login_openid').setStyle({zIndex: 3}) })
+            Event.observe('login_openid', 'blur', function() { if ($('login_openid').value == '') $('login_openid').setStyle({zIndex: 1}) })
           </script>
           HTML
         end      
