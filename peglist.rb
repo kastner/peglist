@@ -111,7 +111,7 @@ module Peglist::Controllers
   class AddQuickPeg < R '/add_quick_peg'
     def post
       @user = User.find_by_id(@state.user_id)
-      puts input.number
+      # puts input.number
       @peg = @user.pegs.create(:number => input.number, :phrase => input.phrase)
       @form_id = Time.new.to_f.to_s
       @headers["Content-Type"] = "text/javascript"

@@ -141,6 +141,12 @@ ul#peg_list li img {
   margin: 5px 0 5px 5px;
 }
 
+ul#peg_list li span {
+  font-size: 90%;
+  margin-left: 4px;
+  margin-top: 2px;
+}
+
 #footer {
  clear: left;
 }
