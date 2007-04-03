@@ -124,21 +124,21 @@ ul#peg_list {
   margin: 0;
   padding: 0;
   margin-top: 10px;
-  margin-left: 10px;
+  margin-left: 0px;
   overflow: auto;
 }
 
 ul#peg_list li {
   float: left;
-  width: 85px;
-  height: 105px;
+  width: 79px;
+  height: 103px;
   border: 1px solid black;
-  margin: 3px;
+  margin: 2px 5px 5px 0;
   padding: 2px;
 }
 
 ul#peg_list li img {
-  margin: 5px 0 5px 5px;
+  margin: 2px 0 2px 2px;
 }
 
 ul#peg_list li span {
@@ -172,6 +172,10 @@ ul#peg_list li span {
 
 #new_peg {
   
+}
+
+#new_peg #peg_image {
+  float: right;
 }
 
 #new_peg label {

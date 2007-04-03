@@ -22,9 +22,7 @@ ImagePanel.prototype = {
     var i = 0;
     this.image_list.innerHTML = '';
     this.images.forEach(function(image) {
-      console.log("pos: " + this.position + "/ i:" + i + " / per:" + this.per_page + " / length:" + this.images.length)
       if (i >= this.position && i < this.position + this.per_page) {
-        //new Insertion.Bottom(this.image_list, this.image(image));
         this.image_list.appendChild(this.image(image));
       }
       i++;
@@ -33,12 +31,12 @@ ImagePanel.prototype = {
   
   image: function(image) {
     var url = "http://farm" + image.farm + ".static.flickr.com/" + image.server + "/" + image.id + "_" + image.secret + "_s.jpg";
-    var link = "http://www.flickr.com/photos/" + image.user_id + "/" + image.id
+    var link = "http://www.flickr.com/photos/" + image.owner + "/" + image.id
+    console.log(link)
     img = document.createElement("IMG")
     img.src = url;
     img.rel = link;
     Event.observe(img, 'click', function(e) {
-      console.log(this.image_list);
       ele = Event.element(e);
       
       var sels = document.getElementsByClassName("selected", this.image_list);
@@ -48,6 +46,11 @@ ImagePanel.prototype = {
       
       $(this.options.src).value = ele.src;
       $(this.options.link).value = ele.rel;
+
+      if (this.options.image_show) {
+        $(this.options.image_show).getElementsByTagName("A")[0].href = ele.rel;
+        $(this.options.image_show).getElementsByTagName("IMG")[0].src = ele.src;        
+      }
     }.bind(this))
     return img;
   },

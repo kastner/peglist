@@ -115,6 +115,9 @@ module Peglist::Controllers
       @peg = @user.pegs.find_by_id(id)
       if @peg
         @peg.phrase = input.phrase
+        @peg.image_url = input.image_url
+        @peg.image_link = input.image_link
+        @peg.notes = input.notes
         @peg.save
         # make sure it IS an XHR TODO
         @headers["Content-Type"] = "text/javascript"
@@ -279,7 +282,7 @@ module Peglist::Controllers
       if service =~ /flickr/
         method = "flickr.photos.search"
         api_key = "16fb5e4b6048568754eb7c4b401fd45c"
-        url = "http://api.flickr.com/services/rest/?method=#{method}&api_key=#{api_key}&format=json&sort=interestingness-desc&text=#{input.q}&nojsoncallback=1"
+        url = "http://api.flickr.com/services/rest/?method=#{method}&api_key=#{api_key}&format=json&sort=interestingness-desc&text=#{Camping.escape(input.q)}&nojsoncallback=1"
         open(url).read
       end
     end
@@ -378,15 +381,18 @@ module Peglist::Views
   
   def new
     h1 "Add a peg"
+    textalize <<-HTML
+    h2. This isn't finished. For now, "add many":/manynew and edit the pictures from the homepage
+    HTML
     errors_for @peg
-    form.new_peg :id => "new_peg", :action => "add_peg", :method => "post" do
-      # images TODO
-      label "Number:"
-      input :type => "text", :name => "number", :value => @peg.number
-      label "Peg:"
-      input :type => "text", :name => "phrase", :value => @peg.phrase
-      input :type => "submit", :id => "new_peg_submit", :value => "Save"
-    end    
+    # form.new_peg :id => "new_peg", :action => "add_peg", :method => "post" do
+    #   # images TODO
+    #   label "Number:"
+    #   input :type => "text", :name => "number", :value => @peg.number
+    #   label "Peg:"
+    #   input :type => "text", :name => "phrase", :value => @peg.phrase
+    #   input :type => "submit", :id => "new_peg_submit", :value => "Save"
+    # end    
   end
   
   def many_new
@@ -420,6 +426,10 @@ module Peglist::Views
       # Delete, change phrase, images
       h3 "Editing peg for number #{@peg.number}"
       
+      div.peg_image! do
+        text %Q{<a href="#{@peg.image_link}"><img src="#{@peg.image_url}"/></a>}
+      end
+      
       input :type => "hidden", :name => "number", :value => @peg.number
       label "Peg:"
       
@@ -430,8 +440,8 @@ module Peglist::Views
         @peg.notes
       end
       
-      input :type => "hidden", :id => "new_peg_image_url", :name => "image_url"
-      input :type => "hidden", :id => "new_peg_image_link", :name => "image_link"
+      input :type => "hidden", :id => "new_peg_image_url", :name => "image_url", :value => @peg.image_url
+      input :type => "hidden", :id => "new_peg_image_link", :name => "image_link", :value => @peg.image_link
       
       label "Find an image for this peg:"
       input :type => "text", :id => "new_peg_image_search", :value => @peg.phrase
@@ -458,12 +468,7 @@ module Peglist::Views
             parameters: "q=" + $F('new_peg_image_search'),
             onSuccess: function(req) {
               var p = eval("(" + req.responseText + ")")
-              // var photos = p.photos.photo
-              new ImagePanel(p.photos.photo, 'image_wrap', {src: "new_peg_image_url", link: "new_peg_image_link"})
-              // photos.photos.photo.forEach(function(photo) {
-              //   image_url = "http://farm" + photo.farm + ".static.flickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_s.jpg"
-              //   new Insertion.Bottom('image_area', "<img src='" + image_url + "'>")
-              // })
+              new ImagePanel(p.photos.photo, 'image_wrap', {src: "new_peg_image_url", link: "new_peg_image_link", image_show: "peg_image"})
             }
           })
         })
@@ -481,6 +486,14 @@ module Peglist::Views
       img :src => (@peg.image_url || "/static/empty.gif")
       span "#{@peg.number}: #{@peg.phrase}"
     end
+    text <<-HTML
+    <script type="text/javascript" charset="utf-8">
+      Event.observe('peg_#{@peg.id}', 'click', function() {
+        new Ajax.Request('/popup_peg/#{@peg.id}', {method: 'get'})
+      })
+    </script>
+    HTML
+    
   end
   
   def _logged_in_home
@@ -499,18 +512,9 @@ module Peglist::Views
           _peg_box
         end
       end
-      text <<-HTML
-      <script type="text/javascript" charset="utf-8">
-        document.getElementsByClassName('peg').forEach(function(peg) {
-          Event.observe(peg, 'click', function() {
-            new Ajax.Request('/popup_peg/' + peg.id.replace(/peg_/, ''), {method: 'get'})
-          })
-        })
-      </script>
-      HTML
-      div.peg_popup_wrap! :style => "display: none;" do
-        div.peg_popup!
-      end
+      # div.peg_popup_wrap! :style => "display: none;" do
+      #   div.peg_popup!
+      # end
     else
       img :src => '/static/blank_slate.jpg'
     end
