@@ -169,3 +169,70 @@ ul#peg_list li span {
   width: 300px;
   border: 2px solid black;
 }
+
+#new_peg {
+  
+}
+
+#new_peg label {
+  display: block;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+#new_peg input[type="text"] {
+  width: 340px;
+  margin-left: 10px;
+}
+
+#new_peg textarea {
+  width: 340px;
+  height: 50px;
+  display: block;
+  margin-left: 10px;
+}
+
+#new_peg #image_area {
+  width: 462px;
+  position: relative;
+  background: #999;
+  border-style: outset;
+  border-style: groove;
+  border: 3px inset black;
+  height: 78px;
+  max-height: 78px;
+/*  overflow: auto;*/
+  float: left;
+}
+
+#new_peg #image_area img {
+  border: 1px solid #999;
+  margin-top: 2px;
+}
+
+#new_peg br {
+  clear: left;
+}
+
+#new_peg #image_area .selected {
+  border: 1px solid blue;
+}
+
+.image_button {
+  float: left;
+  height: 78px;
+  width: 20px;
+  background: #888;
+  border: 3px outset black;
+  margin: 0 2px;
+  line-height: 80px;
+  text-align: center;
+  font-family: "Goudy Old Style", "Palatino","Book Antiqua",serif;
+  font-size: 160%;
+}
+
+#image_up {
+  
+}

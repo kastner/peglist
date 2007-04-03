@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.dirname(__FILE__) + "/../../lib"
-%w|camping camping/session openid face redcloth|.each{|lib| require lib}
+%w|camping camping/session openid face redcloth open-uri|.each{|lib| require lib}
 
 Camping.goes :Peglist
 
@@ -274,6 +274,17 @@ module Peglist::Controllers
     end
   end
   
+  class Search < R '/search/(.+)'
+    def post(service)
+      if service =~ /flickr/
+        method = "flickr.photos.search"
+        api_key = "16fb5e4b6048568754eb7c4b401fd45c"
+        url = "http://api.flickr.com/services/rest/?method=#{method}&api_key=#{api_key}&format=json&sort=interestingness-desc&text=#{input.q}&nojsoncallback=1"
+        open(url).read
+      end
+    end
+  end
+  
   class Static < R '/static/(.+)'
     MIME_TYPES = {'.css' => 'text/css', '.js' => 'text/javascript', 
                   '.jpg' => 'image/jpeg'}
@@ -326,6 +337,7 @@ module Peglist::Views
         link :rel => 'stylesheet', :type => 'text/css', :href => '/static/lightbox.css'
         script :type => 'text/javascript', :src => '/static/prototype.js'
         script :type => 'text/javascript', :src => '/static/lightbox.js'
+        script :type => 'text/javascript', :src => '/static/image_panel.js'
       end
       body :id => (@body_id || "home") do
         div.page! do
@@ -407,11 +419,56 @@ module Peglist::Views
     form.new_peg :id => "new_peg" do
       # Delete, change phrase, images
       h3 "Editing peg for number #{@peg.number}"
+      
       input :type => "hidden", :name => "number", :value => @peg.number
       label "Peg:"
+      
       input :type => "text", :name => "phrase", :value => @peg.phrase
+
+      label "Notes:"      
+      textarea :name => "notes" do
+        @peg.notes
+      end
+      
+      input :type => "hidden", :id => "new_peg_image_url", :name => "image_url"
+      input :type => "hidden", :id => "new_peg_image_link", :name => "image_link"
+      
+      label "Find an image for this peg:"
+      input :type => "text", :id => "new_peg_image_search", :value => @peg.phrase
+      input :type => "button", :id => "new_peg_image_button", :value => "search"
+      
+      div.image_wrap! do
+        div.image_down! :class => "image_button" do; "<" end
+        div.image_area! :class => "image_list" do
+        end
+        div.image_up! :class => "image_button" do; ">" end
+      end
+      
+      # do flickr and yahoo
+      
+      br
+      
       input :type => "submit", :id => "new_peg_submit", :value => "Save"
       input :type => "button", :id => "new_peg_cancel", :value => "Cancel"
+      
+      text <<-HTML
+      <script type="text/javascript" charset="utf-8">
+        Event.observe('new_peg_image_button', 'click', function() {
+          new Ajax.Request('/search/flickr/', {
+            parameters: "q=" + $F('new_peg_image_search'),
+            onSuccess: function(req) {
+              var p = eval("(" + req.responseText + ")")
+              // var photos = p.photos.photo
+              new ImagePanel(p.photos.photo, 'image_wrap', {src: "new_peg_image_url", link: "new_peg_image_link"})
+              // photos.photos.photo.forEach(function(photo) {
+              //   image_url = "http://farm" + photo.farm + ".static.flickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_s.jpg"
+              //   new Insertion.Bottom('image_area', "<img src='" + image_url + "'>")
+              // })
+            }
+          })
+        })
+      </script>
+      HTML
     end
   end
   

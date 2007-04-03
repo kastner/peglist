@@ -16,13 +16,14 @@ Modified : February 1, 2006
 	left:50%;
 	z-index:9999;
 	width:600px;
-	height:280px;
+	height:380px;
 	margin:-220px 0 0 -250px;
 	border:1px solid #fff;
 	background:#FDFCE9;
 	text-align:left;
 	color: white;
 	padding: 10px;
+	overflow: auto;
 }
 #lightbox[id]{
 	position:fixed;
