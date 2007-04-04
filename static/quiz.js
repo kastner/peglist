@@ -18,12 +18,14 @@ Object.extend(Array.prototype, {
 var Quiz = Class.create();
 Quiz.prototype = {
   initialize: function(pegs, container, options) {
-    this.current = 0;
+    this.pegs = pegs;
     
     this.options = options;
     this.container = $(container);
-    this.pegs = pegs.randomize();
 
+    this.buttons = document.createElement("DIV");
+    this.buttons.id = "buttons";
+    
     this.next_button = document.createElement("INPUT");
     this.next_button.type = "button";
     this.next_button.value = "Next";
@@ -32,19 +34,70 @@ Quiz.prototype = {
     this.flip_button.type = "button";
     this.flip_button.value = "Flip";
     
-    Event.observe(this.flip_button, 'click', function() { this.flip(); }.bind(this))
-    Event.observe(this.next_button, 'click', function() { this.next(); }.bind(this))
+    Event.observe(this.flip_button, 'click', this.flip.bindAsEventListener(this))
+    Event.observe(this.next_button, 'click', this.next.bindAsEventListener(this))
+
+    this.buttons.appendChild(this.next_button);
+    this.buttons.appendChild(this.flip_button);    
+    
+    Event.observe(document, 'keyup', this.keyHandler.bindAsEventListener(this))
     
     this.loadImages();
+    
+    this.start();
+  },
+  
+  start: function() {
+    this.current = 0;
+    this.pegs = this.pegs.randomize();
+    this.container.innerHTML = "";
     this.flip();
   },
   
+  keyHandler: function(e) {
+    var key = String.fromCharCode(e.keyCode)
+    switch (key) {
+      case "P":
+        this.previous();
+        break;
+      case "N":
+        this.next();
+        break;
+      case "F":
+        this.flip();
+        break;
+      case " ":
+      case "G":
+        this.go();
+        break;
+      case "R":
+        this.start();
+    }
+  },
+  
   loadImages: function() {
+    var ims = [];
+    var i = 0;
     this.pegs.each(function(peg) {
-      var im = new Image()
-      im.src = peg.attributes.image_url;
-      console.log(im.src)
+      ims[++i] = new Image()
+      ims[i].src = peg.attributes.image_url;
     })
+  },
+
+  go: function() {
+    if (this.container.innerHTML.match(/Peg number/)) {
+      this.flip();
+    }
+    else {
+      this.next();
+    }
+  },
+  
+  previous: function() {
+    this.current--;
+    if (this.current < 0) this.current = this.pegs.length;
+    this.container.innerHTML = "";
+    this.flip();
   },
   
   next: function() {
@@ -58,14 +111,15 @@ Quiz.prototype = {
     if (this.container.innerHTML.match(/Peg number/)) {
       this.container.innerHTML = "";
       
-      var h2 = document.createElement("H2");
-      h2.innerHTML = this.pegs[this.current].attributes.phrase;
+      var h1 = document.createElement("H1");
+      h1.innerHTML = this.pegs[this.current].attributes.phrase;
       
       var div = document.createElement("DIV");
+      div.id = "images";
       div.innerHTML = "<img src='" + this.pegs[this.current].attributes.image_url + "'>"
       
-      this.container.appendChild(h2);
       this.container.appendChild(div);
+      this.container.appendChild(h1);
     }
     else {
       this.container.innerHTML = "";
@@ -79,8 +133,6 @@ Quiz.prototype = {
       this.container.appendChild(h1);
     }
     
-    this.container.appendChild(this.next_button);
-    this.container.appendChild(this.flip_button);
-    
+    this.container.appendChild(this.buttons);    
   }
 }
