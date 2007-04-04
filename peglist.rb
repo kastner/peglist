@@ -5,7 +5,7 @@ $:.unshift File.dirname(__FILE__) + "/../../lib"
 
 Camping.goes :Peglist
 
-ActiveRecord::Base.logger = Logger.new(STDOUT)
+# ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 module Peglist
   include Camping::Session
@@ -304,12 +304,13 @@ module Peglist::Controllers
     end
   end
   
-  class Favicon < R '/favicon.ico'
-    def get
-      @headers['Content-Type'] = 'image/vnd.microsoft.icon'
-      @header['X-Sendfile'] = "#{PATH}/static/favicon.ico"
-    end
-  end
+  # class Favicon < R '/favicon'
+  #   def get
+  #     path = File.expand_path(File.dirname(__FILE__))
+  #     @headers['Content-Type'] = 'image/vnd.microsoft.icon'
+  #     @header['X-Sendfile'] = "#{path}/static/favicon.ico"
+  #   end
+  # end
   
   class AvatarSearch < R '/avatar/(.+)/(.+)'
     def get(service, username)
@@ -338,6 +339,8 @@ module Peglist::Views
         title "Peglist from Meta | ateM"
         link :rel => 'stylesheet', :type => 'text/css', :href => '/static/style.css'
         link :rel => 'stylesheet', :type => 'text/css', :href => '/static/lightbox.css'
+        link :rel => 'shortcut icon', :type => 'image/png', :href => '/static/favicon.png'
+        link :rel => 'icon', :type => 'image/png', :href => '/static/favicon.png'
         script :type => 'text/javascript', :src => '/static/prototype.js'
         script :type => 'text/javascript', :src => '/static/lightbox.js'
         script :type => 'text/javascript', :src => '/static/image_panel.js'
