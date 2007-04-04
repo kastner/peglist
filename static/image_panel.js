@@ -21,7 +21,7 @@ ImagePanel.prototype = {
   loadImages: function() {
     var i = 0;
     this.image_list.innerHTML = '';
-    this.images.forEach(function(image) {
+    this.images.each(function(image) {
       if (i >= this.position && i < this.position + this.per_page) {
         this.image_list.appendChild(this.image(image));
       }
@@ -32,7 +32,6 @@ ImagePanel.prototype = {
   image: function(image) {
     var url = "http://farm" + image.farm + ".static.flickr.com/" + image.server + "/" + image.id + "_" + image.secret + "_s.jpg";
     var link = "http://www.flickr.com/photos/" + image.owner + "/" + image.id
-    console.log(link)
     img = document.createElement("IMG")
     img.src = url;
     img.rel = link;
