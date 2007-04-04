@@ -241,3 +241,25 @@ ul#peg_list li span {
 #image_up {
   
 }
+
+#flash_card {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  margin: 0 auto;
+  border: 3px solid #888;
+  text-align: center;
+  margin-top: 20px;
+}
+
+#flash_card h1, #flash_card h2 {
+  text-align: center;
+  margin: 50px 0px;
+}
+
+#flash_card div {
+  position: relative;
+  height: 75px;
+  margin-top: -10px;
+  margin-bottom: 5px;
+}

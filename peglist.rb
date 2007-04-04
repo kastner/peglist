@@ -304,14 +304,6 @@ module Peglist::Controllers
     end
   end
   
-  # class Favicon < R '/favicon'
-  #   def get
-  #     path = File.expand_path(File.dirname(__FILE__))
-  #     @headers['Content-Type'] = 'image/vnd.microsoft.icon'
-  #     @header['X-Sendfile'] = "#{path}/static/favicon.ico"
-  #   end
-  # end
-  
   class AvatarSearch < R '/avatar/(.+)/(.+)'
     def get(service, username)
       case service
@@ -321,6 +313,21 @@ module Peglist::Controllers
         FlickrFace.url(username)
       end
     end
+  end
+  
+  class Quiz
+    def get
+      if @state.user_id
+        @user = User.find_by_id(@state.user_id) if @state.user_id
+        if input.start and input.end
+          @pegs = @user.pegs.find(1,2,3,4)
+          @pegs = @user.pegs.find(:all, :conditions => ["number IN (#{(input.start.to_i..input.end.to_i).to_a.join(",")})"])
+        else
+          @pegs = @user.pegs.find(:all)
+        end
+      end
+      render :quiz
+    end    
   end
 end
 
@@ -372,6 +379,17 @@ module Peglist::Views
         end
       end
     end
+  end
+  
+  def quiz
+    div.flash_card! do
+    end
+    script :type => 'text/javascript', :src => '/static/quiz.js'
+    text <<-HTML
+    <script type="text/javascript" charset="utf-8">
+      new Quiz(#{@pegs.to_json}, 'flash_card');
+    </script>
+    HTML
   end
   
   def index
