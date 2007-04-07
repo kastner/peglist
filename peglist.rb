@@ -16,7 +16,7 @@ module Peglist::Helpers
     url = URL(*args)
     url.scheme = "http"
     if `hostname`.match(/i-am-a-Mac/)
-      url.host = "camping.metaatem.net"
+      url.host = "peglist.metaatem.net"
       url.port = nil
     end
     url
