@@ -5,7 +5,7 @@ $:.unshift File.dirname(__FILE__) + "/../../lib"
 
 Camping.goes :Peglist
 
-ActiveRecord::Base.logger = Logger.new(STDOUT)
+# ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 module Peglist
   include Camping::Session
@@ -76,6 +76,13 @@ module Peglist::Controllers
       # raise @state.to_s
       @user = User.find(@state.user_id) if @state.user_id
       render :index
+    end
+  end
+  
+  class Users
+    def get
+      @users = User.find(:all, :order => "created_at DESC")
+      render :users
     end
   end
   
@@ -435,6 +442,19 @@ module Peglist::Views
     #   input :type => "text", :name => "phrase", :value => @peg.phrase
     #   input :type => "submit", :id => "new_peg_submit", :value => "Save"
     # end    
+  end
+  
+  def users
+    ul.users! do
+      @users.each do |user|
+        text <<-HTML
+        <li>
+          <img src="#{user.avatar_url}">
+          #{user.username} (#{user.openid}) #{user.created_at}
+        </li>
+        HTML
+      end
+    end
   end
   
   def many_new
