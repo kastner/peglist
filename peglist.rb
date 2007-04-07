@@ -5,7 +5,7 @@ $:.unshift File.dirname(__FILE__) + "/../../lib"
 
 Camping.goes :Peglist
 
-# ActiveRecord::Base.logger = Logger.new(STDOUT)
+ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 module Peglist
   include Camping::Session
@@ -74,8 +74,29 @@ module Peglist::Controllers
   class Index < R '/'
     def get
       # raise @state.to_s
-      @user = User.find_by_id(@state.user_id) if @state.user_id
+      @user = User.find(@state.user_id) if @state.user_id
       render :index
+    end
+  end
+  
+  class K
+    def get
+      User.find(@state.user_id).pegs.destroy_all
+    end
+  end
+  
+  class FillUp < R '/f'
+    def get
+      @user = User.find(@state.user_id) if @state.user_id
+      if !@user.pegs or @user.pegs.empty?
+        User.find(1).ordered_pegs[0..19].each do |peg|
+          @user.pegs.create(peg.attributes.merge({
+            :id => nil,
+            :created_at => nil
+          }))
+        end
+      end
+      redirect HURL(Index).to_s
     end
   end
   
@@ -315,7 +336,7 @@ module Peglist::Controllers
     end
   end
   
-  class Quiz
+  class Flash
     def get
       if @state.user_id
         @user = User.find_by_id(@state.user_id) if @state.user_id
@@ -326,7 +347,7 @@ module Peglist::Controllers
           @pegs = @user.pegs.find(:all)
         end
       end
-      render :quiz
+      render :flash
     end    
   end
 end
@@ -381,7 +402,7 @@ module Peglist::Views
     end
   end
   
-  def quiz
+  def flash
     div.flash_card! do
     end
     script :type => 'text/javascript', :src => '/static/quiz.js'
@@ -454,7 +475,7 @@ module Peglist::Views
       input :type => "hidden", :name => "number", :value => @peg.number
       label "Peg:"
       
-      input :type => "text", :name => "phrase", :value => @peg.phrase
+      input.phrase! :type => "text", :name => "phrase", :value => @peg.phrase
 
       label "Notes:"      
       textarea :name => "notes" do
@@ -467,6 +488,8 @@ module Peglist::Views
       label "Find an image for this peg:"
       input :type => "text", :id => "new_peg_image_search", :value => @peg.phrase
       input :type => "button", :id => "new_peg_image_button", :value => "search"
+
+      label ""
       
       div.image_wrap! do
         div.image_down! :class => "image_button" do; "<" end
@@ -484,6 +507,10 @@ module Peglist::Views
       
       text <<-HTML
       <script type="text/javascript" charset="utf-8">
+        Event.observe('phrase', 'blur', function() {
+          $('new_peg_image_search').value = $F('phrase')
+        })
+        
         Event.observe('new_peg_image_button', 'click', function() {
           new Ajax.Request('/search/flickr/', {
             parameters: "q=" + $F('new_peg_image_search'),
@@ -522,11 +549,18 @@ module Peglist::Views
       img :src => @user.avatar_url if @user.avatar_url?
       text "#{@user.username}'s Peg list"
     end
-    a "Add a peg", :href => R(New)
-    text " or "
-    a "Add many pegs", :href => R(Manynew)
+    # a "Add a peg", :href => R(New)
+    # text " or "
+    a "Add pegs", :href => R(Manynew)
     
     unless @user.ordered_pegs.empty?
+      br
+      input.flash_me! :type => "button", :value => "Show me flash cards"
+      text <<-HTML
+      <script type="text/javascript" charset="utf-8">
+        Event.observe('flash_me', 'click', function() {window.location = '/flash'})
+      </script>
+      HTML
       ul.peg_list! do
         @user.ordered_pegs.each do |peg|
           @peg = peg
@@ -537,6 +571,13 @@ module Peglist::Views
       #   div.peg_popup!
       # end
     else
+      br
+      input.fill_up! :type => "button", :value => "I'm too lazy for this. Do it for me."
+      text <<-HTML
+      <script type="text/javascript" charset="utf-8">
+        Event.observe('fill_up', 'click', function() {window.location = '/f'})
+      </script>
+      HTML
       img :src => '/static/blank_slate.jpg'
     end
   end
@@ -551,7 +592,7 @@ module Peglist::Views
     
     Pet list from Meta | ateM will let you record your peg list, and associate each peg with an image to help strengthen the association -- peg lists work best when your form pictures in your mind.
     
-    If you're ready to get started -- log in at the top of the page with any "OpenID":http://http://en.wikipedia.org/wiki/OpenID address.
+    If you're ready to get started -- log in at the top of the page with any "OpenID":http://en.wikipedia.org/wiki/OpenID address.
     HTML
   end
   

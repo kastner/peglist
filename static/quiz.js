@@ -34,11 +34,15 @@ Quiz.prototype = {
     this.flip_button.type = "button";
     this.flip_button.value = "Flip";
     
+    this.instructions = document.createElement("SPAN");
+    this.instructions.innerHTML = "<br/>Hit space bar to flip then next"
+    
     Event.observe(this.flip_button, 'click', this.flip.bindAsEventListener(this))
     Event.observe(this.next_button, 'click', this.next.bindAsEventListener(this))
 
     this.buttons.appendChild(this.next_button);
-    this.buttons.appendChild(this.flip_button);    
+    this.buttons.appendChild(this.flip_button);
+    this.buttons.appendChild(this.instructions);
     
     Event.observe(document, 'keyup', this.keyHandler.bindAsEventListener(this))
     

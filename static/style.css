@@ -11,7 +11,7 @@ span.amp {
 h1 {
   font-family: Georgia, sans;
   font-weight: normal;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
 }
 
 #page {
@@ -271,6 +271,6 @@ ul#peg_list li span {
 
 #flash_card #buttons {
   position: absolute;
-  top: 270px;
+  top: 249px;
   width: 400px;
 }
