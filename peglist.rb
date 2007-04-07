@@ -450,6 +450,7 @@ module Peglist::Views
         text <<-HTML
         <li>
           <img src="#{user.avatar_url}">
+          #{user.pegs.size} pegs
           #{user.username} (#{user.openid}) #{user.created_at}
         </li>
         HTML
