@@ -610,7 +610,7 @@ module Peglist::Views
     
     For more information on peg lists and why they are useful for anyone, <a href="/what">read "What is a peg list"</a>.
     
-    Pet list from Meta | ateM will let you record your peg list, and associate each peg with an image to help strengthen the association -- peg lists work best when your form pictures in your mind.
+    Peg list from Meta | ateM will let you record your peg list, and associate each peg with an image to help strengthen the association -- peg lists work best when your form pictures in your mind.
     
     If you're ready to get started -- log in at the top of the page with any "OpenID":http://en.wikipedia.org/wiki/OpenID address.
     HTML
