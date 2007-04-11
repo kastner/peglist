@@ -106,7 +106,10 @@ Quiz.prototype = {
   
   next: function() {
     this.current++;
-    if (this.current >= this.pegs.length) this.current = 0;
+    if (this.current >= this.pegs.length) {
+      this.current = 0;
+      this.pegs.randomize;
+    }
     this.container.innerHTML = "";
     this.flip();
   },
