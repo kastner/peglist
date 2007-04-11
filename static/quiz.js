@@ -108,7 +108,7 @@ Quiz.prototype = {
     this.current++;
     if (this.current >= this.pegs.length) {
       this.current = 0;
-      this.pegs.randomize;
+      this.pegs = this.pegs.randomize;
     }
     this.container.innerHTML = "";
     this.flip();
