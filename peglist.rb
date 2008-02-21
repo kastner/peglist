@@ -2,6 +2,8 @@
 
 $:.unshift File.dirname(__FILE__) + "/../../lib"
 $:.unshift File.dirname(__FILE__)
+require 'rubygems'
+gem 'activerecord', '<2.0'
 %w|rubygems mongrel camping mongrel/camping camping/session openid face redcloth open-uri|.each{|lib| require lib}
 
 Camping.goes :Peglist
