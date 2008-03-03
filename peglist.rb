@@ -626,7 +626,7 @@ module Peglist::Views
     
     A peg system is a mnemonic technique for memorizing lists. It works by pre-memorizing a list of words that are easy to associate with the numbers they represent(1 to 10, 1-100, 1-1000, etc). Those objects form the "pegs" of the system. Then in the future, to rapidly memorize a list of arbitrary objects, each one is associated with the appropriate peg. Generally, a peglist only has to be memorized one time, and can then be used over and over every time a list of items needs to be memorized.
     
-    taken from "http://en.wikipedia.org/wiki/Mnemonic_peg_system":Wikipedia
+    taken from "Wikipedia":http://en.wikipedia.org/wiki/Mnemonic_peg_system
     
     The short version: you spend time in the beginning learning a list of words that you later use as anchors for memorizing OTHER things. By working on this memory skill, not only are you able to memorize lists in day-to-day life (like grocerys), it helps you with your normal memory as well.
     
