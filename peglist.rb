@@ -3,7 +3,7 @@
 $LOAD_PATH << File.dirname(__FILE__)
 require 'rubygems'
 require 'activerecord'
-%w|rubygems camping camping/session openid face redcloth open-uri|.each{|lib| require lib}
+%w|rubygems camping camping/session openid openid/store/filesystem face redcloth open-uri|.each{|lib| require lib}
 
 Camping.goes :Peglist
 
@@ -244,7 +244,7 @@ module Peglist::Controllers
   
   class Login
     def open_id_consumer
-      OpenID::Consumer.new(@state, OpenID::FilesystemStore.new("/tmp/openids"))
+      OpenID::Consumer.new(@state, OpenID::Store::Filesystem.new("/tmp/openids"))
     end
     
     def normalize_url(url)
@@ -265,15 +265,15 @@ module Peglist::Controllers
     end
 
     def get
-      response = open_id_consumer.complete(input)
+      response = open_id_consumer.complete(input, self.HURL(env["REQUEST_PATH"] || env["REQUEST_URI"]).to_s)
       identity_url = normalize_url(response.identity_url) if response.identity_url
       
       case response.status
-      when OpenID::CANCEL
+      when OpenID::Consumer::CANCEL
         @a = "Canceled"
-      when OpenID::FAILURE
-        @a = "OpenID authentication failed: #{response.msg}"
-      when OpenID::SUCCESS
+      when OpenID::Consumer::FAILURE
+        @a = "OpenID authentication failed: #{response.message}"
+      when OpenID::Consumer::SUCCESS
         @state.openid = identity_url
         @user = User.find_by_openid(identity_url)
         if @user
@@ -290,12 +290,11 @@ module Peglist::Controllers
       openid_url = normalize_url(input.openid_url)
       response = open_id_consumer.begin(openid_url)
 
-      case response.status
-      when OpenID::FAILURE
-        @a = "Failure with that OpenID url. Check it and try again please."
-      when OpenID::SUCCESS
+      begin
         redirect response.redirect_url(self.HURL.to_s, self.HURL(Login).to_s)
-      end      
+      rescue OpenID::OpenIDError, Timeout::Error => e
+        @a = "Failure with that OpenID url."
+      end        
     end
   end
 
