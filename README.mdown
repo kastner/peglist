@@ -1,0 +1,12 @@
+Peglist
+=======
+
+Honestly... do you really care about this?
+It's a memory technique and the code is old and crufty.
+
+It has a few notable things going on:
+
+* OpenID for login
+* Uses flickr (json api!) to grab images for each of your pegs
+
+beyond that, I honestly doubt there's another soul out there that would use this.
