@@ -28,8 +28,7 @@ namespace :deploy do
   task :after_update_code, :roles => :app, :except => {:no_symlink => true} do
     run <<-CMD
       cd #{release_path} &&
-      ln -nfs #{shared_path}/db/peglist.sqlite3 #{release_path}/ &&
-      ln -nfs #{release_path}/static #{release_path}/public/
+      ln -nfs #{shared_path}/db/peglist.sqlite3 #{release_path}/
     CMD
   end
 end

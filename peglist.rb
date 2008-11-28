@@ -1,9 +1,8 @@
 #!/usr/bin/env ruby
 
-$:.unshift File.dirname(__FILE__) + "/../../lib"
-$:.unshift File.dirname(__FILE__)
+$LOAD_PATH << File.dirname(__FILE__)
 require 'rubygems'
-gem 'activerecord', '<2.0'
+require 'activerecord'
 %w|rubygems mongrel camping mongrel/camping camping/session openid face redcloth open-uri|.each{|lib| require lib}
 
 Camping.goes :Peglist
@@ -758,8 +757,5 @@ def Peglist.create
   Peglist::Models.create_schema :assume => (Peglist::Models::Peg.table_exists? ? 1.0 : 0.0)
 end
 
-if __FILE__ == $0
-  Peglist::Models::Base.establish_connection :adapter => "sqlite3", :database => "/Users/kastner/.camping.db"
-  Peglist::Models::Base.threaded_connections = false
-  Mongrel::Camping::start("0.0.0.0",3301,"/",Peglist).run.join
-end
+Peglist::Models::Base.establish_connection :adapter => "sqlite3", :database => "./peglist.sqlite3"
+Peglist.create
