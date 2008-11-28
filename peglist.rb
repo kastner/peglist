@@ -3,7 +3,7 @@
 $LOAD_PATH << File.dirname(__FILE__)
 require 'rubygems'
 require 'activerecord'
-%w|rubygems camping mongrel/camping camping/session openid face redcloth open-uri|.each{|lib| require lib}
+%w|rubygems camping camping/session openid face redcloth open-uri|.each{|lib| require lib}
 
 Camping.goes :Peglist
 
