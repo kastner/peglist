@@ -367,6 +367,7 @@ module Peglist::Views
   end
   
   def textalize(str)
+    str = str.gsub(/^\s*$/, "-\n").gsub(/^\s*/, '').gsub(/^\-$/, '')
     text RedCloth.new(str).to_html
   end
   
