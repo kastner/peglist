@@ -1,6 +1,6 @@
 class Peglist
   module Views
-    class Index < Mustache
+    class Layout < Mustache
       include ViewHelpers
     end
   end

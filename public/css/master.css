@@ -1,6 +1,6 @@
 body {
   font: 75%/1.2em "Helvetica Nueu", helvetica, sans-serif;
-  background: #C58A6A url('/static/background.jpg');
+  background: #C58A6A url('/images/background.jpg');
 }
 
 span.amp {
@@ -26,7 +26,7 @@ h1 {
 #header .wrap {
   position: relative;
   overflow: auto;
-  background: #8B4313 url('/static/header.jpg');
+  background: #8B4313 url('/images/header.jpg');
   border-bottom: 3px solid #B3622A;
   overflow: hidden;
 }
@@ -68,7 +68,7 @@ h1 {
 }
 
 #header form input[type="text"]{
-  background: white url('/static/openid-icon.gif') no-repeat;
+  background: white url('/images/openid-icon.gif') no-repeat;
   position: relative;
   width: 200px;
   font-size: 110%;
