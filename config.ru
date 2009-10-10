@@ -1,2 +1,3 @@
 require 'peglist'
-run Rack::Adapter::Camping.new(Peglist)
+use Rack::ShowExceptions
+run Peglist.new

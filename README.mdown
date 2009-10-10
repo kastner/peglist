@@ -2,7 +2,7 @@ Peglist
 =======
 
 Honestly... do you really care about this?
-It's a memory technique and the code is old and crufty.
+It's a memory technique and the code is less-old and less-crufty. than it was
 
 It has a few notable things going on:
 
