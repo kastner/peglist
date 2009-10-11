@@ -1,0 +1,39 @@
+<h1>Pick your username and an avatar if you have one</h1>
+<h2>You will use the OpenID {{ openid }} to log in</h2>
+
+errors_for @new_user
+
+<form action="/signup" method="post">
+    <p>
+        <label for="signup_username">Username:</label>
+        <input type="text" name="username" id="signup_username">
+    </p>
+    
+    <fieldset>
+        <legend>Find my avatar:</legend>
+        
+        <p>
+            <label for="flickr_username">Flickr username:</label>
+            <input type="text" name="flickr_username" class="avatar_search" id="flickr_username">
+            <input type="button" value="Lookup" id="flickr_button" class="avatar_button">
+        </p>
+
+        <p>
+            <label for="twitter_username">Twitter username:</label>
+            <input type="text" name="twitter_username" class="avatar_search" id="twitter_username">
+            <input type="button" value="Lookup" id="twitter_button" class="avatar_button">
+        </p>
+    </fieldset>
+    
+    <p>
+        <label for="signup_avatar">Avatar url:</label>
+        <input type="text" name="avatar_url" id="signup_avatar">
+        {{#has_avatar_url}}
+        <img src="{{avatar_url}}" width="45" id="avatar_preview">
+        {{/has_avatar_url}}
+    </p>
+    
+    <p>
+        <input type="submit" value="Sign up">
+    </p>
+</form>

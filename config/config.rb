@@ -5,8 +5,12 @@ class Peglist
   end
   
   configure :development do
-    # puts "Setting up static"
-    # use Rack::Static, :urls => %w|/images /css|, :root => "/public"
+    use Rack::Reloader
+    
+    ActiveRecord::Base.establish_connection({
+      :adapter => "sqlite3",
+      :database => "peglist.sqlite3"
+    })
   end
   
   configure :production do
