@@ -1,3 +1,5 @@
+require 'views/view_helpers'
+
 class Peglist
   configure do
   end

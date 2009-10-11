@@ -1,8 +1,13 @@
 module ViewHelpers
-  def included
-    puts "I am in"
-  end
   def amp
     %q|<span class="amp">&amp;</span>|
+  end
+  
+  def logged_in
+    false
+  end
+  
+  def not_logged_in
+    true
   end
 end

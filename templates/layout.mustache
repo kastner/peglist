@@ -16,12 +16,25 @@
             
             <div class="wrap">
                 <hr>
-                LOGIN
+                {{#logged_in}}
+                    OH man, nice to see you again
+                {{/logged_in}}
+                {{#not_logged_in}}
+                    <form action="/login" method="post">
+                        <div>
+                            <label for="login_openid" id="login_openid_label">
+                                your OpenID address
+                            </label>
+                            <input type="text" name="openid_url" id="login_openid">
+                            <input type="submit" value="login">
+                        </div>
+                    </form>
+                {{/not_logged_in}}
                 <hr>
                 
                 <ul id="nav">
                     <li class="home"><a href="/">Home {{{ amp }}} Peg list</a></li>
-                    <li class="what"><a href="/what">What is a Pest list?</a></li>
+                    <li class="what"><a href="/what">What is a Peg list?</a></li>
                 </ul>
             </div>
         </div>
