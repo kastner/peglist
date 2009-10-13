@@ -1,5 +1,5 @@
-$:.unshift '../../Ruby/mustache/lib'
-$:.unshift 'lib/rack-openid/lib'
+$:.unshift File.dirname(__FILE__) + '../../Ruby/mustache/lib'
+$:.unshift File.dirname(__FILE__) + 'lib/rack-openid/lib'
 require 'sinatra/base'
 require 'mustache/sinatra'
 require 'ruby-debug'

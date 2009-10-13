@@ -5,7 +5,7 @@ class Peglist
   end
   
   configure :development do
-    use Rack::Reloader
+    # use Rack::Reloader
     
     ActiveRecord::Base.establish_connection({
       :adapter => "sqlite3",

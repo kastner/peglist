@@ -3,6 +3,8 @@ body {
   background: #C58A6A url('/images/background.jpg');
 }
 
+a { color: #A34F27;}
+
 span.amp {
   font-family: "Goudy Old Style", "Palatino","Book Antiqua",serif;
   font-size: 130%;
